@@ -6,6 +6,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, permissions, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.viewsets import GenericViewSet
 
@@ -13,7 +14,8 @@ from planetarium.models import (
     AstronomyShow,
     PlanetariumDome,
     ShowSession,
-    ShowTheme, Reservation
+    ShowTheme,
+    Reservation
 )
 from planetarium.permissions import IsAdminOrIfAuthenticatedReadOnly
 from planetarium.serializers import (
@@ -22,7 +24,10 @@ from planetarium.serializers import (
     ShowSessionSerializer,
     ShowThemeSerializer,
     AstronomyShowDetailSerializer,
-    AstronomyShowListSerializer, ShowSessionDetailSerializer, ShowSessionListSerializer, ReservationSerializer,
+    AstronomyShowListSerializer,
+    ShowSessionDetailSerializer,
+    ShowSessionListSerializer,
+    ReservationSerializer,
     ReservationListSerializer,
 )
 
@@ -63,6 +68,7 @@ class AstronomyShowViewSet(
         return [int(str_id) for str_id in qs.split(',')]
 
     def get_queryset(self):
+        """Retrieve the astronomy shows with filters"""
         show_theme = self.request.query_params.get("show_theme")
         title = self.request.query_params.get("title")
 
@@ -107,11 +113,11 @@ class AstronomyShowViewSet(
 class ShowSessionViewSet(viewsets.ModelViewSet):
     queryset = (
         ShowSession.objects.all()
-        .select_related("astronomy_show")
+        .select_related("astronomy_show", "planetarium_dome")
         .annotate(
             tickets_available=(
-                F("planetarium_dome__rows") * F("planetarium_dome__seats_in_row")
-                - Count("tickets")
+                    F("planetarium_dome__rows") * F("planetarium_dome__seats_in_row")
+                    - Count("tickets")
             )
         )
     )
@@ -175,7 +181,7 @@ class ReservationViewSet(
     )
     serializer_class = ReservationSerializer
     pagination_class = ReservationPagination
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return Reservation.objects.filter(user=self.request.user)
