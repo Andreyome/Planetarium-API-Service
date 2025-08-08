@@ -51,10 +51,10 @@ class ShowSessionListSerializer(ShowSessionSerializer):
         source='planetarium_dome.name', read_only=True
     )
     astronomy_show = serializers.CharField(
-        source='astronomy_show.name', read_only=True
+        source='astronomy_show.title', read_only=True
     )
     planetarium_dome_capacity = serializers.IntegerField(
-        source='planetarium_dome_capacity.name', read_only=True
+        read_only=True
     )
     tickets_available = serializers.IntegerField(read_only=True)
 
@@ -112,7 +112,7 @@ class ShowSessionDetailSerializer(serializers.ModelSerializer):
         )
 
 class ReservationSerializer(serializers.ModelSerializer):
-    tickets = TicketSerializer(many=True, read_only=True, allow_empty=True)
+    tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
 
     class Meta:
         model = Reservation

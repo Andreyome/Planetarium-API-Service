@@ -58,7 +58,7 @@ class AstronomyShowViewSet(
     mixins.RetrieveModelMixin,
     GenericViewSet,
 ):
-    queryset = AstronomyShow.objects.prefetch_related("show_themes")
+    queryset = AstronomyShow.objects.prefetch_related("themes")
     serializer_class = ShowSessionSerializer
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
@@ -163,7 +163,7 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         ]
     )
     def list(self, request, *args, **kwargs):
-        super().list(request, *args, **kwargs)
+        return super().list(request, *args, **kwargs)
 
 
 class ReservationPagination(PageNumberPagination):
