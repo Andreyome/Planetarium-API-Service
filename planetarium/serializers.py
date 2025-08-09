@@ -3,7 +3,14 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 
-from planetarium.models import PlanetariumDome, ShowTheme, AstronomyShow, ShowSession, Ticket, Reservation
+from planetarium.models import (
+    PlanetariumDome,
+    ShowTheme,
+    AstronomyShow,
+    ShowSession,
+    Ticket,
+    Reservation
+)
 
 
 class PlanetariumDomeSerializer(serializers.ModelSerializer):
@@ -99,7 +106,11 @@ class TicketSeatsSerializer(TicketSerializer):
 class ShowSessionDetailSerializer(serializers.ModelSerializer):
     astronomy_show = AstronomyShowListSerializer(many=False, read_only=True)
     planetarium_dome = PlanetariumDomeSerializer(many=False, read_only=True)
-    taken_seats = TicketSeatsSerializer(source="tickets", many=True, read_only=True)
+    taken_seats = TicketSeatsSerializer(
+        source="tickets",
+        many=True,
+        read_only=True
+    )
 
     class Meta:
         model = ShowSession
@@ -110,6 +121,7 @@ class ShowSessionDetailSerializer(serializers.ModelSerializer):
             'planetarium_dome',
             'taken_seats',
         )
+
 
 class ReservationSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)

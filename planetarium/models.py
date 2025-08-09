@@ -33,8 +33,16 @@ class AstronomyShow(models.Model):
 
 
 class ShowSession(models.Model):
-    astronomy_show = models.ForeignKey(AstronomyShow, on_delete=models.CASCADE, related_name='sessions')
-    planetarium_dome = models.ForeignKey(PlanetariumDome, on_delete=models.CASCADE, related_name='sessions')
+    astronomy_show = models.ForeignKey(
+        AstronomyShow,
+        on_delete=models.CASCADE,
+        related_name='sessions'
+    )
+    planetarium_dome = models.ForeignKey(
+        PlanetariumDome,
+        on_delete=models.CASCADE,
+        related_name='sessions'
+    )
     show_time = models.DateTimeField()
 
     class Meta:
@@ -55,15 +63,25 @@ class Reservation(models.Model):
 class Ticket(models.Model):
     row = models.IntegerField()
     seat = models.IntegerField()
-    show_session = models.ForeignKey(ShowSession, on_delete=models.CASCADE, related_name='tickets')
-    reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, related_name='tickets')
+    show_session = models.ForeignKey(
+        ShowSession,
+        on_delete=models.CASCADE,
+        related_name='tickets'
+    )
+    reservation = models.ForeignKey(
+        Reservation,
+        on_delete=models.CASCADE,
+        related_name='tickets'
+    )
 
     def __str__(self):
         return f"Row: {self.row}, Seat: {self.seat} for {self.show_session}"
 
     @staticmethod
     def validate_ticket(row, seat, planetarium_dome, error_to_raise):
-        for ticket_attr_value, ticket_attr_name, planetarium_dome_attr_name in [
+        for (ticket_attr_value,
+             ticket_attr_name,
+             planetarium_dome_attr_name) in [
             (row, "row", "rows"),
             (seat, "seat", "seats_in_row"),
         ]:
